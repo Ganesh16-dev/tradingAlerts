@@ -21,8 +21,11 @@ INITIAL_CAPITAL = 10000
 EMAIL_ALERT = True
 EMAIL_FROM = os.environ.get("EMAIL_FROM")
 EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
-EMAIL_TO = os.environ.get("EMAIL_TO")
+EMAIL_TO = os.environ.get("EMAIL_TO")  # Comma-separated string of emails
 SENDER_NAME = "Gold ETF Alerts"
+
+# Convert comma-separated string to list
+recipient_list = [email.strip() for email in EMAIL_TO.split(",")]
 
 # -----------------------------
 # 2. Email alert function with inline image
@@ -30,7 +33,7 @@ SENDER_NAME = "Gold ETF Alerts"
 def send_email_alert(subject, body, image_path=None):
     msg = MIMEMultipart("related")
     msg['From'] = f"{SENDER_NAME} <{EMAIL_FROM}>"
-    msg['To'] = EMAIL_TO
+    msg['To'] = ", ".join(recipient_list)
     msg['Subject'] = subject
 
     html_body = f"""
@@ -52,7 +55,7 @@ def send_email_alert(subject, body, image_path=None):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(EMAIL_FROM, EMAIL_PASSWORD)
         server.send_message(msg)
-    print("Email alert sent!")
+    print("Email alert sent to:", recipient_list)
 
 # -----------------------------
 # 3. Fetch historical data
